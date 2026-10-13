@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USAHAKITA - Aplikasi PPOB & Pembayaran</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER / WELCOME SECTION -->
+        <div class="app-header">
+            <div id="header-guest" class="header-content">
+                <h2>Selamat Datang! 👋</h2>
+                <p>Silahkan login/register terlebih dahulu.</p>
+                <button class="btn-login-trigger" id="openAuthModalBtn">Login / Register</button>
+            </div>
+            <div id="header-user" class="header-content hidden">
+                <div class="user-greeting">
+                    <div>
+                        <h2>Halo, <span id="user-name-display">Pengguna</span>! 👋</h2>
+                        <p>No HP: <span id="user-phone-display">08123456789</span></p>
+                    </div>
+                    <div class="saldo-box">
+                        <span>Saldo Anda</span>
+                        <h3>Rp <span id="user-saldo">50.000</span></h3>
+                        <button id="topupBtn" class="btn-topup"><i class="fa-solid fa-plus"></i> Top Up Saldo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT VIEWS -->
+        <div class="app-body">
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="menu-card-container">
+                    <div class="section-title">Menu Layanan</div>
+                    <div class="menu-grid">
+                        <div class="menu-item" onclick="openTransaction('Pulsa')">
+                            <div class="menu-icon"><i class="fa-solid fa-signal"></i></div>
+                            <span>Pulsa</span>
+                        </div>
+                        <div class="menu-item" onclick="openTransaction('Paket Data')">
+                            <div class="menu-icon"><i class="fa-solid fa-wifi"></i></div>
+                            <span>Paket Data</span>
+                        </div>
+                        <div class="menu-item" onclick="openTransaction('Listrik Prabayar')">
+                            <div class="menu-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <span>Listrik Prabayar</span>
+                        </div>
+                        <div class="menu-item" onclick="openTransaction('E-Wallet')">
+                            <div class="menu-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                            <span>E-Wallet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="promo-banner">
+                    <div class="promo-text">
+                        <h4>Butuh Bantuan & Isi Saldo?</h4>
+                        <p>Top up saldo USAHAKITA terhubung langsung ke WhatsApp Admin.</p>
+                    </div>
+                    <a href="https://wa.me/6282255886736?text=Halo%20Admin%20USAHAKITA,%20saya%20ingin%20mengisi%20saldo." target="_blank" class="wa-admin-btn">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp Admin (082255886736)
+                    </a>
+                </div>
+            </div>
+
+            <!-- VIEW: TRANSAKSI -->
+            <div id="view-transaksi" class="view-section">
+                <div class="section-title">Riwayat Transaksi</div>
+                <div id="transaction-history-list" class="transaction-list">
+                    <p class="empty-text">Belum ada transaksi.</p>
+                </div>
+            </div>
+
+            <!-- VIEW: AKUN -->
+            <div id="view-akun" class="view-section">
+                <div class="section-title">Akun Saya</div>
+                <div class="account-card">
+                    <div class="acc-info">
+                        <i class="fa-solid fa-user-circle fa-3x"></i>
+                        <div>
+                            <h4 id="acc-name">Nama Pengguna</h4>
+                            <p id="acc-phone">08XXXXXXXXXX</p>
+                            <p id="acc-email">email@domain.com</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <button class="btn-action" onclick="openResetPasswordModal()">Reset Password Baru</button>
+                    <button class="btn-action logout" onclick="logoutAccount()">Keluar (Logout)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('transaksi')">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Transaksi</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('akun')">
+                <i class="fa-solid fa-user"></i>
+                <span>Akun</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL AUTH (LOGIN / REGISTER) -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeAuthModal">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Masuk</button>
+                <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Daftar</button>
+            </div>
+
+            <!-- Form Login -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Nomor HP</label>
+                    <input type="tel" id="loginPhone" placeholder="Contoh: 08123456789" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+                </div>
+                <div class="form-forgot">
+                    <a href="#" onclick="openForgotPasswordModal()">Lupa Password?</a>
+                </div>
+                <button type="submit" class="btn-submit">Masuk</button>
+            </form>
+
+            <!-- Form Register -->
+            <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="regName" placeholder="Masukkan nama lengkap" required>
+                </div>
+                <div class="form-group">
+                    <label>Nomor HP</label>
+                    <input type="tel" id="regPhone" placeholder="Contoh: 08123456789" required>
+                </div>
+                <div class="form-group">
+                    <label>Email (Pengguna Baru)</label>
+                    <input type="email" id="regEmail" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Buat password akun" required>
+                </div>
+                <button type="submit" class="btn-submit">Daftar Sekarang</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LUPA / RESET PASSWORD -->
+    <div id="forgotModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+            <h3>Reset Password</h3>
+            <p class="modal-desc">Pilih metode untuk mengirimkan tautan/kode reset password baru:</p>
+            <form onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label>Nomor HP atau Email Terdaftar</label>
+                    <input type="text" id="resetTarget" placeholder="Masukkan No HP / Email" required>
+                </div>
+                <div class="form-group">
+                    <label>Kirim Melalui:</label>
+                    <select id="resetMethod" class="form-select">
+                        <option value="gmail">Gmail / Email</option>
+                        <option value="whatsapp">Nomor HP (WhatsApp)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Kirim Instruksi Reset</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TRANSAKSI -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTransactionModal()">&times;</span>
+            <h3 id="modal-service-title">Transaksi</h3>
+            <form onsubmit="processTransaction(event)">
+                <div class="form-group">
+                    <label>Nomor HP / ID Pelanggan</label>
+                    <input type="text" id="trxTargetNo" placeholder="Masukkan nomor tujuan" required>
+                </div>
+
+                <!-- Opsi E-Wallet (Gopay / DANA) -->
+                <div id="ewalet-options-container" class="form-group hidden">
+                    <label>Pilih E-Wallet</label>
+                    <div class="ewallet-select-grid">
+                        <label class="radio-card">
+                            <input type="radio" name="ewalletType" value="Gopay" checked>
+                            <span>Gopay</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="ewalletType" value="DANA">
+                            <span>DANA</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Pilih Jumlah Nominal (5 Opsi)</label>
+                    <div id="nominal-options" class="nominal-grid">
+                        <!-- 5 Pilihan Nominal dimuat via JS -->
+                    </div>
+                </div>
+
+                <div class="trx-summary">
+                    <span>Total Pembayaran:</span>
+                    <strong>Rp <span id="selected-nominal-display">0</span></strong>
+                </div>
+
+                <button type="submit" class="btn-submit">Bayar Sekarang</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
